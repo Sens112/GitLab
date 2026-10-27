@@ -37,7 +37,7 @@ jobs:
             /d:sonar.token="$SONAR_TOKEN" \
             /d:sonar.host.url="https://sonarcloud.io"
 
-          dotnet build "GitLab1.csproj"
+          dotnet build "GitLab1/GitLab1.csproj"
 
           dotnet sonarscanner end \
             /d:sonar.token="$SONAR_TOKEN"
