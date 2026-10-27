@@ -1,1 +1,44 @@
 
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install SonarScanner
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Analyze project
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+        run: |
+          dotnet sonarscanner begin \
+            /k:"$PROJECT_KEY" \
+            /o:"$ORGANIZATION" \
+            /d:sonar.token="$SONAR_TOKEN" \
+            /d:sonar.host.url="https://sonarcloud.io"
+
+          dotnet build
+
+          dotnet sonarscanner end \
+            /d:sonar.token="$SONAR_TOKEN"
+
